@@ -58,7 +58,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('settings', [SettingController::class, 'store'])->name('settings.store');
     Route::get('settings/landing', [SettingController::class, 'landing'])->name('settings.landing');
-    Route::put('settings/landing', [SettingController::class, 'updateLanding'])->name('settings.landing.update');
+    Route::post('settings/landing', [SettingController::class, 'updateLanding'])->name('settings.landing.update');
 });
 
 require __DIR__.'/auth.php';

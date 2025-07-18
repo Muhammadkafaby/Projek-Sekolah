@@ -61,7 +61,7 @@ const navLinks = [
     >
       <div class="flex items-center justify-center h-20 border-b px-4">
         <Link :href="route('dashboard')" class="flex items-center space-x-3">
-            <img :src="$page.props.settings.school_logo || 'https://api.iconify.design/ph:student-bold.svg?color=%23ffffff'" alt="School Logo" class="h-10 w-10 rounded-full bg-primary p-1">
+            <img :src="`/storage/${$page.props.settings.school_logo}` || 'https://api.iconify.design/ph:student-bold.svg?color=%23ffffff'" alt="School Logo" class="h-10 w-10 rounded-full bg-primary p-1">
             <h1 class="text-xl font-bold text-gray-800">Admin Panel</h1>
         </Link>
       </div>

@@ -45,7 +45,7 @@ const smoothScroll = (target) => {
       <div class="container mx-auto px-6 py-4">
         <div class="flex justify-between items-center">
           <Link :href="route('welcome')" class="flex items-center space-x-3">
-            <img :src="$page.props.settings.school_logo || 'https://api.iconify.design/ph:student-bold.svg?color=%234f46e5'" alt="School Logo" class="h-10 w-10 rounded-full bg-primary p-1">
+            <img :src="`/storage/${$page.props.settings.school_logo}` || 'https://api.iconify.design/ph:student-bold.svg?color=%234f46e5'" alt="School Logo" class="h-10 w-10 rounded-full bg-primary p-1">
             <h1 class="text-2xl font-bold text-foreground">{{ $page.props.settings.school_name }}</h1>
           </Link>
           
@@ -119,7 +119,7 @@ const smoothScroll = (target) => {
           <!-- About School -->
           <div class="space-y-4">
             <div class="flex items-center space-x-3">
-              <img :src="$page.props.settings.school_logo || 'https://api.iconify.design/ph:student-bold.svg?color=%234f46e5'" alt="School Logo" class="h-10 w-10 rounded-full bg-primary p-1">
+              <img :src="`/storage/${$page.props.settings.school_logo}` || 'https://api.iconify.design/ph:student-bold.svg?color=%234f46e5'" alt="School Logo" class="h-10 w-10 rounded-full bg-primary p-1">
               <h2 class="text-xl font-bold">{{ $page.props.settings.school_name }}</h2>
             </div>
             <p class="text-gray-600">{{ $page.props.settings.school_vision }}</p>
