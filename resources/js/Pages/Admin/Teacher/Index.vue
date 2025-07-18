@@ -15,6 +15,7 @@ import { Input } from '@/Components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import { Badge } from '@/Components/ui/badge';
+import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
 import debounce from 'lodash/debounce';
 
@@ -89,59 +90,56 @@ watch(search, debounce((value) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="teacher in teachers.data" :key="teacher.id">
-                        <TableCell>
-                            <div class="flex items-center space-x-3">
-                                <img :src="`https://ui-avatars.com/api/?name=${teacher.name}&background=random`" class="h-10 w-10 rounded-full" />
-                                <span class="font-medium">{{ teacher.name }}</span>
-                            </div>
-                        </TableCell>
-                        <TableCell>{{ teacher.nip }}</TableCell>
-                        <TableCell>
-                            <Badge variant="secondary">{{ teacher.position }}</Badge>
-                        </TableCell>
-                        <TableCell>{{ teacher.subject }}</TableCell>
-                        <TableCell class="text-right">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger as-child>
-                                    <Button variant="ghost" size="icon">
-                                        <MoreHorizontal class="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem as-child>
-                                        <Link :href="route('admin.teachers.edit', teacher.id)">
-                                            <Pencil class="mr-2 h-4 w-4" /> Edit
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem @click="() => router.delete(route('admin.teachers.destroy', teacher.id))" class="text-destructive">
-                                        <Trash2 class="mr-2 h-4 w-4" /> Hapus
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                        </TableRow>
+                        <template v-if="teachers.data.length > 0">
+                            <TableRow v-for="teacher in teachers.data" :key="teacher.id">
+                                <TableCell>
+                                    <div class="flex items-center space-x-3">
+                                        <img :src="`https://ui-avatars.com/api/?name=${teacher.name}&background=random`" class="h-10 w-10 rounded-full" />
+                                        <span class="font-medium">{{ teacher.name }}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>{{ teacher.nip }}</TableCell>
+                                <TableCell>
+                                    <Badge variant="secondary">{{ teacher.position }}</Badge>
+                                </TableCell>
+                                <TableCell>{{ teacher.subject }}</TableCell>
+                                <TableCell class="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger as-child>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal class="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem as-child>
+                                                <Link :href="route('admin.teachers.edit', teacher.id)">
+                                                    <Pencil class="mr-2 h-4 w-4" /> Edit
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem @click="() => router.delete(route('admin.teachers.destroy', teacher.id))" class="text-destructive">
+                                                <Trash2 class="mr-2 h-4 w-4" /> Hapus
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        </template>
+                        <template v-else>
+                            <TableRow>
+                                <TableCell colspan="5" class="h-24 text-center">
+                                    Tidak ada data guru.
+                                </TableCell>
+                            </TableRow>
+                        </template>
                     </TableBody>
                     </Table>
                 </div>
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-6">
                     <p class="text-sm text-muted-foreground">
-                        Menampilkan {{ teachers.from }} sampai {{ teachers.to }} dari {{ teachers.total }} hasil
+                        Menampilkan {{ teachers.from || 0 }} sampai {{ teachers.to || 0 }} dari {{ teachers.total }} hasil
                     </p>
-                    <div class="flex items-center space-x-2">
-                        <Button
-                            v-for="link in teachers.links"
-                            :key="link.label"
-                            :href="link.url"
-                            v-html="link.label"
-                            :disabled="!link.url || link.active"
-                            :class="{ 'bg-primary text-white': link.active }"
-                            as="a"
-                            size="sm"
-                            variant="outline"
-                        />
-                    </div>
+                    <Pagination :links="teachers.links" />
                 </div>
             </CardContent>
         </Card>

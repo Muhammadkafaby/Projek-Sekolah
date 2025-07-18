@@ -15,6 +15,7 @@ import { Input } from '@/Components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import { Badge } from '@/Components/ui/badge';
+import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
 import debounce from 'lodash/debounce';
 
@@ -62,7 +63,7 @@ watch(search, debounce((value) => {
             <CardHeader>
                 <div class="flex items-center justify-between">
                     <CardTitle>Daftar Jadwal</CardTitle>
-                    <div class="flex items-center space-x-2">
+                    <div class="relative w-full max-w-sm">
                         <Input type="text" placeholder="Cari jadwal..." class="pl-10" v-model="search" />
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <Search class="h-5 w-5 text-gray-400" />
@@ -84,57 +85,54 @@ watch(search, debounce((value) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="schedule in schedules.data" :key="schedule.id">
-                        <TableCell>
-                            <Badge variant="secondary">{{ schedule.day }}</Badge>
-                        </TableCell>
-                        <TableCell>{{ schedule.start_time }} - {{ schedule.end_time }}</TableCell>
-                        <TableCell class="font-medium">{{ schedule.subject }}</TableCell>
-                        <TableCell>
-                            <Badge variant="outline">{{ schedule.class.name }}</Badge>
-                        </TableCell>
-                        <TableCell>{{ schedule.teacher.name }}</TableCell>
-                        <TableCell class="text-right">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger as-child>
-                                    <Button variant="ghost" size="icon">
-                                        <MoreHorizontal class="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem as-child>
-                                        <Link :href="route('admin.schedules.edit', schedule.id)">
-                                            <Pencil class="mr-2 h-4 w-4" /> Edit
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem @click="() => router.delete(route('admin.schedules.destroy', schedule.id))" class="text-destructive">
-                                        <Trash2 class="mr-2 h-4 w-4" /> Hapus
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                        </TableRow>
+                        <template v-if="schedules.data.length > 0">
+                            <TableRow v-for="schedule in schedules.data" :key="schedule.id">
+                                <TableCell>
+                                    <Badge variant="secondary">{{ schedule.day }}</Badge>
+                                </TableCell>
+                                <TableCell>{{ schedule.start_time }} - {{ schedule.end_time }}</TableCell>
+                                <TableCell class="font-medium">{{ schedule.subject }}</TableCell>
+                                <TableCell>
+                                    <Badge variant="outline">{{ schedule.class.name }}</Badge>
+                                </TableCell>
+                                <TableCell>{{ schedule.teacher.name }}</TableCell>
+                                <TableCell class="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger as-child>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal class="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem as-child>
+                                                <Link :href="route('admin.schedules.edit', schedule.id)">
+                                                    <Pencil class="mr-2 h-4 w-4" /> Edit
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem @click="() => router.delete(route('admin.schedules.destroy', schedule.id))" class="text-destructive">
+                                                <Trash2 class="mr-2 h-4 w-4" /> Hapus
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        </template>
+                        <template v-else>
+                            <TableRow>
+                                <TableCell colspan="6" class="h-24 text-center">
+                                    Tidak ada data jadwal.
+                                </TableCell>
+                            </TableRow>
+                        </template>
                     </TableBody>
                     </Table>
                 </div>
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-6">
                     <p class="text-sm text-muted-foreground">
-                        Menampilkan {{ schedules.from }} sampai {{ schedules.to }} dari {{ schedules.total }} hasil
+                        Menampilkan {{ schedules.from || 0 }} sampai {{ schedules.to || 0 }} dari {{ schedules.total }} hasil
                     </p>
-                    <div class="flex items-center space-x-2">
-                        <Button
-                            v-for="link in schedules.links"
-                            :key="link.label"
-                            :href="link.url"
-                            v-html="link.label"
-                            :disabled="!link.url || link.active"
-                            :class="{ 'bg-primary text-white': link.active }"
-                            as="a"
-                            size="sm"
-                            variant="outline"
-                        />
-                    </div>
+                    <Pagination :links="schedules.links" />
                 </div>
             </CardContent>
         </Card>

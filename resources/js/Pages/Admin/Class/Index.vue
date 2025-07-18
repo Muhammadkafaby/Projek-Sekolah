@@ -15,6 +15,7 @@ import { Input } from '@/Components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import { Badge } from '@/Components/ui/badge';
+import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
 import debounce from 'lodash/debounce';
 
@@ -83,56 +84,53 @@ watch(search, debounce((value) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="classItem in classes.data" :key="classItem.id">
-                        <TableCell class="font-medium">{{ classItem.name }}</TableCell>
-                        <TableCell>{{ classItem.teacher.name }}</TableCell>
-                        <TableCell>
-                            <Badge variant="outline">{{ classItem.year }}</Badge>
-                        </TableCell>
-                        <TableCell>
-                            <Badge>{{ classItem.students_count }} Siswa</Badge>
-                        </TableCell>
-                        <TableCell class="text-right">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger as-child>
-                                    <Button variant="ghost" size="icon">
-                                        <MoreHorizontal class="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem as-child>
-                                        <Link :href="route('admin.classes.edit', classItem.id)">
-                                            <Pencil class="mr-2 h-4 w-4" /> Edit
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem @click="() => router.delete(route('admin.classes.destroy', classItem.id))" class="text-destructive">
-                                        <Trash2 class="mr-2 h-4 w-4" /> Hapus
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                        </TableRow>
+                        <template v-if="classes.data.length > 0">
+                            <TableRow v-for="classItem in classes.data" :key="classItem.id">
+                                <TableCell class="font-medium">{{ classItem.name }}</TableCell>
+                                <TableCell>{{ classItem.teacher.name }}</TableCell>
+                                <TableCell>
+                                    <Badge variant="outline">{{ classItem.year }}</Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge>{{ classItem.students_count }} Siswa</Badge>
+                                </TableCell>
+                                <TableCell class="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger as-child>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal class="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem as-child>
+                                                <Link :href="route('admin.classes.edit', classItem.id)">
+                                                    <Pencil class="mr-2 h-4 w-4" /> Edit
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem @click="() => router.delete(route('admin.classes.destroy', classItem.id))" class="text-destructive">
+                                                <Trash2 class="mr-2 h-4 w-4" /> Hapus
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        </template>
+                        <template v-else>
+                            <TableRow>
+                                <TableCell colspan="5" class="h-24 text-center">
+                                    Tidak ada data kelas.
+                                </TableCell>
+                            </TableRow>
+                        </template>
                     </TableBody>
                     </Table>
                 </div>
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-6">
                     <p class="text-sm text-muted-foreground">
-                        Menampilkan {{ classes.from }} sampai {{ classes.to }} dari {{ classes.total }} hasil
+                        Menampilkan {{ classes.from || 0 }} sampai {{ classes.to || 0 }} dari {{ classes.total }} hasil
                     </p>
-                    <div class="flex items-center space-x-2">
-                        <Button
-                            v-for="link in classes.links"
-                            :key="link.label"
-                            :href="link.url"
-                            v-html="link.label"
-                            :disabled="!link.url || link.active"
-                            :class="{ 'bg-primary text-white': link.active }"
-                            as="a"
-                            size="sm"
-                            variant="outline"
-                        />
-                    </div>
+                    <Pagination :links="classes.links" />
                 </div>
             </CardContent>
         </Card>

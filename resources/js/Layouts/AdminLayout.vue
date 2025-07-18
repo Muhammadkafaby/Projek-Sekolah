@@ -1,6 +1,7 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import { useColorMode } from '@vueuse/core';
 import {
   Bell, Home, Users, Book, Calendar, FileText, DollarSign, Settings, Menu, X, ChevronDown, Search, LogOut, UserCircle, GraduationCap, Banknote, Megaphone, Folder, UserCheck, LayoutDashboard, Sun, Moon,
 } from 'lucide-vue-next';
@@ -110,12 +111,12 @@ const navLinks = [
                 <Bell class="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-80 z-50">
-              <DropdownMenuLabel>Notifikasi</DropdownMenuLabel>
-              <DropdownMenuSeparator />
+            <DropdownMenuContent align="end" class="w-80 z-50 dark:bg-gray-800">
+              <DropdownMenuLabel class="dark:text-white">Notifikasi</DropdownMenuLabel>
+              <DropdownMenuSeparator class="dark:bg-gray-700" />
               <DropdownMenuItem>
                 <div class="flex flex-col items-center justify-center text-center p-4">
-                  <p class="text-sm text-gray-500">Tidak ada notifikasi baru.</p>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Tidak ada notifikasi baru.</p>
                 </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -125,20 +126,20 @@ const navLinks = [
             <DropdownMenuTrigger as-child>
               <Button variant="ghost" class="flex items-center space-x-2 rounded-full p-1">
                 <img class="h-8 w-8 rounded-full" :src="$page.props.auth.user.avatar || `https://ui-avatars.com/api/?name=${$page.props.auth.user.name}&background=random`" alt="User" />
-                <span class="hidden md:inline text-sm font-medium">{{ $page.props.auth.user.name }}</span>
-                <ChevronDown class="h-4 w-4 hidden md:inline" />
+                <span class="hidden md:inline text-sm font-medium text-gray-700 dark:text-gray-200">{{ $page.props.auth.user.name }}</span>
+                <ChevronDown class="h-4 w-4 hidden md:inline text-gray-700 dark:text-gray-200" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" class="w-48 z-50">
-              <DropdownMenuLabel>Akun Saya</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem as-child>
+            <DropdownMenuContent align="end" class="w-48 z-50 dark:bg-gray-800">
+              <DropdownMenuLabel class="dark:text-white">Akun Saya</DropdownMenuLabel>
+              <DropdownMenuSeparator class="dark:bg-gray-700" />
+              <DropdownMenuItem as-child class="dark:text-white dark:hover:bg-gray-700">
                 <Link :href="route('profile.edit')" class="flex items-center">
                     <UserCircle class="w-4 h-4 mr-2" /> Profile
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem as-child>
+              <DropdownMenuSeparator class="dark:bg-gray-700" />
+              <DropdownMenuItem as-child class="dark:text-white dark:hover:bg-gray-700">
                 <Link :href="route('logout')" method="post" as="button" class="flex items-center w-full">
                     <LogOut class="w-4 h-4 mr-2" /> Log Out
                 </Link>

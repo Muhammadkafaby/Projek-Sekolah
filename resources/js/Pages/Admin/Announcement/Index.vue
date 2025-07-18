@@ -15,6 +15,7 @@ import { Input } from '@/Components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import { Badge } from '@/Components/ui/badge';
+import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
 import debounce from 'lodash/debounce';
 
@@ -82,55 +83,52 @@ watch(search, debounce((value) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="announcement in announcements.data" :key="announcement.id">
-                        <TableCell class="font-medium">{{ announcement.title }}</TableCell>
-                        <TableCell class="max-w-sm">
-                            <p class="truncate">{{ announcement.content }}</p>
-                        </TableCell>
-                        <TableCell>
-                            <Badge variant="outline">{{ new Date(announcement.created_at).toLocaleDateString('id-ID') }}</Badge>
-                        </TableCell>
-                        <TableCell class="text-right">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger as-child>
-                                    <Button variant="ghost" size="icon">
-                                        <MoreHorizontal class="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem as-child>
-                                        <Link :href="route('admin.announcements.edit', announcement.id)">
-                                            <Pencil class="mr-2 h-4 w-4" /> Edit
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem @click="() => router.delete(route('admin.announcements.destroy', announcement.id))" class="text-destructive">
-                                        <Trash2 class="mr-2 h-4 w-4" /> Hapus
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                        </TableRow>
+                        <template v-if="announcements.data.length > 0">
+                            <TableRow v-for="announcement in announcements.data" :key="announcement.id">
+                                <TableCell class="font-medium">{{ announcement.title }}</TableCell>
+                                <TableCell class="max-w-sm">
+                                    <p class="truncate">{{ announcement.content }}</p>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="outline">{{ new Date(announcement.created_at).toLocaleDateString('id-ID') }}</Badge>
+                                </TableCell>
+                                <TableCell class="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger as-child>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal class="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem as-child>
+                                                <Link :href="route('admin.announcements.edit', announcement.id)">
+                                                    <Pencil class="mr-2 h-4 w-4" /> Edit
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem @click="() => router.delete(route('admin.announcements.destroy', announcement.id))" class="text-destructive">
+                                                <Trash2 class="mr-2 h-4 w-4" /> Hapus
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        </template>
+                        <template v-else>
+                            <TableRow>
+                                <TableCell colspan="4" class="h-24 text-center">
+                                    Tidak ada data pengumuman.
+                                </TableCell>
+                            </TableRow>
+                        </template>
                     </TableBody>
                     </Table>
                 </div>
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-6">
                     <p class="text-sm text-muted-foreground">
-                        Menampilkan {{ announcements.from }} sampai {{ announcements.to }} dari {{ announcements.total }} hasil
+                        Menampilkan {{ announcements.from || 0 }} sampai {{ announcements.to || 0 }} dari {{ announcements.total }} hasil
                     </p>
-                    <div class="flex items-center space-x-2">
-                        <Button
-                            v-for="link in announcements.links"
-                            :key="link.label"
-                            :href="link.url"
-                            v-html="link.label"
-                            :disabled="!link.url || link.active"
-                            :class="{ 'bg-primary text-white': link.active }"
-                            as="a"
-                            size="sm"
-                            variant="outline"
-                        />
-                    </div>
+                    <Pagination :links="announcements.links" />
                 </div>
             </CardContent>
         </Card>

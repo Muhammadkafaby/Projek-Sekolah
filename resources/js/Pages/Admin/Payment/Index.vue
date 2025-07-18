@@ -15,6 +15,7 @@ import { Input } from '@/Components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import { Badge } from '@/Components/ui/badge';
+import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
 import debounce from 'lodash/debounce';
 
@@ -98,67 +99,64 @@ const getStatusVariant = (status) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="billing in billings.data" :key="billing.id">
-                        <TableCell>
-                            <div class="flex items-center space-x-3">
-                                <img :src="`https://ui-avatars.com/api/?name=${billing.student.name}&background=random`" class="h-10 w-10 rounded-full" />
-                                <span class="font-medium">{{ billing.student.name }}</span>
-                            </div>
-                        </TableCell>
-                        <TableCell>{{ billing.payment_type.name }}</TableCell>
-                        <TableCell>{{ formatCurrency(billing.amount) }}</TableCell>
-                        <TableCell>{{ new Date(billing.due_date).toLocaleDateString('id-ID') }}</TableCell>
-                        <TableCell>
-                            <Badge :variant="getStatusVariant(billing.status)">
-                            {{ billing.status === 'paid' ? 'Lunas' : 'Belum Lunas' }}
-                            </Badge>
-                        </TableCell>
-                        <TableCell class="text-right">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger as-child>
-                                    <Button variant="ghost" size="icon">
-                                        <MoreHorizontal class="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem as-child>
-                                        <Link :href="route('admin.billings.show', billing.id)">
-                                            <Eye class="mr-2 h-4 w-4" /> Detail
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem as-child>
-                                        <Link :href="route('admin.billings.edit', billing.id)">
-                                            <Pencil class="mr-2 h-4 w-4" /> Edit
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem @click="() => router.delete(route('admin.billings.destroy', billing.id))" class="text-destructive">
-                                        <Trash2 class="mr-2 h-4 w-4" /> Hapus
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                        </TableRow>
+                        <template v-if="billings.data.length > 0">
+                            <TableRow v-for="billing in billings.data" :key="billing.id">
+                                <TableCell>
+                                    <div class="flex items-center space-x-3">
+                                        <img :src="`https://ui-avatars.com/api/?name=${billing.student.name}&background=random`" class="h-10 w-10 rounded-full" />
+                                        <span class="font-medium">{{ billing.student.name }}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>{{ billing.payment_type.name }}</TableCell>
+                                <TableCell>{{ formatCurrency(billing.amount) }}</TableCell>
+                                <TableCell>{{ new Date(billing.due_date).toLocaleDateString('id-ID') }}</TableCell>
+                                <TableCell>
+                                    <Badge :variant="getStatusVariant(billing.status)">
+                                    {{ billing.status === 'paid' ? 'Lunas' : 'Belum Lunas' }}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell class="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger as-child>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal class="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem as-child>
+                                                <Link :href="route('admin.billings.show', billing.id)">
+                                                    <Eye class="mr-2 h-4 w-4" /> Detail
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem as-child>
+                                                <Link :href="route('admin.billings.edit', billing.id)">
+                                                    <Pencil class="mr-2 h-4 w-4" /> Edit
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem @click="() => router.delete(route('admin.billings.destroy', billing.id))" class="text-destructive">
+                                                <Trash2 class="mr-2 h-4 w-4" /> Hapus
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        </template>
+                        <template v-else>
+                            <TableRow>
+                                <TableCell colspan="6" class="h-24 text-center">
+                                    Tidak ada data tagihan.
+                                </TableCell>
+                            </TableRow>
+                        </template>
                     </TableBody>
                     </Table>
                 </div>
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-6">
                     <p class="text-sm text-muted-foreground">
-                        Menampilkan {{ billings.from }} sampai {{ billings.to }} dari {{ billings.total }} hasil
+                        Menampilkan {{ billings.from || 0 }} sampai {{ billings.to || 0 }} dari {{ billings.total }} hasil
                     </p>
-                    <div class="flex items-center space-x-2">
-                        <Button
-                            v-for="link in billings.links"
-                            :key="link.label"
-                            :href="link.url"
-                            v-html="link.label"
-                            :disabled="!link.url || link.active"
-                            :class="{ 'bg-primary text-white': link.active }"
-                            as="a"
-                            size="sm"
-                            variant="outline"
-                        />
-                    </div>
+                    <Pagination :links="billings.links" />
                 </div>
             </CardContent>
         </Card>

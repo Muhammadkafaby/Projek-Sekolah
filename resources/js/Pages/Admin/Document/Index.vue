@@ -15,6 +15,7 @@ import { Input } from '@/Components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import { Badge } from '@/Components/ui/badge';
+import Pagination from '@/Components/Pagination.vue';
 import { ref, watch } from 'vue';
 import debounce from 'lodash/debounce';
 
@@ -82,58 +83,55 @@ watch(search, debounce((value) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        <TableRow v-for="document in documents.data" :key="document.id">
-                        <TableCell class="font-medium">{{ document.title }}</TableCell>
-                        <TableCell>
-                            <a :href="document.file_url" target="_blank" class="flex items-center text-primary hover:underline">
-                                <File class="mr-2 h-4 w-4" />
-                                {{ document.file }}
-                            </a>
-                        </TableCell>
-                        <TableCell>
-                            <Badge variant="outline">{{ new Date(document.created_at).toLocaleDateString('id-ID') }}</Badge>
-                        </TableCell>
-                        <TableCell class="text-right">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger as-child>
-                                    <Button variant="ghost" size="icon">
-                                        <MoreHorizontal class="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem as-child>
-                                        <Link :href="route('admin.documents.edit', document.id)">
-                                            <Pencil class="mr-2 h-4 w-4" /> Edit
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem @click="() => router.delete(route('admin.documents.destroy', document.id))" class="text-destructive">
-                                        <Trash2 class="mr-2 h-4 w-4" /> Hapus
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </TableCell>
-                        </TableRow>
+                        <template v-if="documents.data.length > 0">
+                            <TableRow v-for="document in documents.data" :key="document.id">
+                                <TableCell class="font-medium">{{ document.title }}</TableCell>
+                                <TableCell>
+                                    <a :href="document.file_url" target="_blank" class="flex items-center text-primary hover:underline">
+                                        <File class="mr-2 h-4 w-4" />
+                                        {{ document.file }}
+                                    </a>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="outline">{{ new Date(document.created_at).toLocaleDateString('id-ID') }}</Badge>
+                                </TableCell>
+                                <TableCell class="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger as-child>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal class="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem as-child>
+                                                <Link :href="route('admin.documents.edit', document.id)">
+                                                    <Pencil class="mr-2 h-4 w-4" /> Edit
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem @click="() => router.delete(route('admin.documents.destroy', document.id))" class="text-destructive">
+                                                <Trash2 class="mr-2 h-4 w-4" /> Hapus
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        </template>
+                        <template v-else>
+                            <TableRow>
+                                <TableCell colspan="4" class="h-24 text-center">
+                                    Tidak ada data dokumen.
+                                </TableCell>
+                            </TableRow>
+                        </template>
                     </TableBody>
                     </Table>
                 </div>
                 <!-- Pagination -->
                 <div class="flex justify-between items-center mt-6">
                     <p class="text-sm text-muted-foreground">
-                        Menampilkan {{ documents.from }} sampai {{ documents.to }} dari {{ documents.total }} hasil
+                        Menampilkan {{ documents.from || 0 }} sampai {{ documents.to || 0 }} dari {{ documents.total }} hasil
                     </p>
-                    <div class="flex items-center space-x-2">
-                        <Button
-                            v-for="link in documents.links"
-                            :key="link.label"
-                            :href="link.url"
-                            v-html="link.label"
-                            :disabled="!link.url || link.active"
-                            :class="{ 'bg-primary text-white': link.active }"
-                            as="a"
-                            size="sm"
-                            variant="outline"
-                        />
-                    </div>
+                    <Pagination :links="documents.links" />
                 </div>
             </CardContent>
         </Card>
