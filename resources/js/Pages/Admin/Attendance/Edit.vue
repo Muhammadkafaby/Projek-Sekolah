@@ -1,6 +1,6 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import { Button } from '@/Components/ui/button';
 import { Label } from '@/Components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from '@/Components/ui/select';
 import { Input } from '@/Components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/Components/ui/radio-group';
 
 const props = defineProps({
   attendance: {
@@ -59,11 +60,11 @@ const submit = () => {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <Label for="date">Tanggal</Label>
-                <Input id="date" type="date" v-model="form.date" required />
+                <Input id="date" type="date" v-model="form.date" required disabled />
               </div>
               <div>
                 <Label for="class_id">Kelas</Label>
-                <Select v-model="form.class_id" required>
+                <Select v-model="form.class_id" required disabled>
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih kelas" />
                   </SelectTrigger>
@@ -76,7 +77,7 @@ const submit = () => {
               </div>
               <div>
                 <Label for="student_id">Siswa</Label>
-                <Select v-model="form.student_id" required>
+                <Select v-model="form.student_id" required disabled>
                   <SelectTrigger>
                     <SelectValue placeholder="Pilih siswa" />
                   </SelectTrigger>
@@ -89,17 +90,24 @@ const submit = () => {
               </div>
               <div>
                 <Label for="status">Status</Label>
-                <Select v-model="form.status" required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Pilih status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Hadir">Hadir</SelectItem>
-                    <SelectItem value="Izin">Izin</SelectItem>
-                    <SelectItem value="Sakit">Sakit</SelectItem>
-                    <SelectItem value="Alpa">Alpa</SelectItem>
-                  </SelectContent>
-                </Select>
+                <RadioGroup v-model="form.status" class="flex space-x-4">
+                  <div class="flex items-center space-x-2">
+                    <RadioGroupItem id="hadir" value="Hadir" />
+                    <Label for="hadir">Hadir</Label>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <RadioGroupItem id="izin" value="Izin" />
+                    <Label for="izin">Izin</Label>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <RadioGroupItem id="sakit" value="Sakit" />
+                    <Label for="sakit">Sakit</Label>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <RadioGroupItem id="alpa" value="Alpa" />
+                    <Label for="alpa">Alpa</Label>
+                  </div>
+                </RadioGroup>
               </div>
             </div>
             <div class="flex justify-end mt-6">

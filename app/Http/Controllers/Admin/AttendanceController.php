@@ -40,11 +40,21 @@ class AttendanceController extends Controller
         $request->validate([
             'date' => 'required|date',
             'class_id' => 'required|exists:classes,id',
-            'student_id' => 'required|exists:students,id',
-            'status' => 'required',
+            'attendances' => 'required|array',
         ]);
 
-        Attendance::create($request->all());
+        foreach ($request->attendances as $student_id => $status) {
+            Attendance::updateOrCreate(
+                [
+                    'date' => $request->date,
+                    'student_id' => $student_id,
+                ],
+                [
+                    'class_id' => $request->class_id,
+                    'status' => $status,
+                ]
+            );
+        }
 
         return redirect()->route('admin.attendances.index')->with('success', 'Absensi berhasil diinput.');
     }
