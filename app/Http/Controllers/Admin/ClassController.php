@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Classes;
+use App\Models\Teacher;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -24,7 +25,9 @@ class ClassController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/Class/Create', [
+            'teachers' => Teacher::all(),
+        ]);
     }
 
     /**
@@ -32,7 +35,15 @@ class ClassController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'teacher_id' => 'required|exists:teachers,id',
+            'year' => 'required',
+        ]);
+
+        Classes::create($request->all());
+
+        return redirect()->route('admin.classes.index')->with('success', 'Kelas berhasil ditambahkan.');
     }
 
     /**
@@ -48,7 +59,10 @@ class ClassController extends Controller
      */
     public function edit(Classes $class)
     {
-        //
+        return Inertia::render('Admin/Class/Edit', [
+            'class' => $class,
+            'teachers' => Teacher::all(),
+        ]);
     }
 
     /**
@@ -56,7 +70,15 @@ class ClassController extends Controller
      */
     public function update(Request $request, Classes $class)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'teacher_id' => 'required|exists:teachers,id',
+            'year' => 'required',
+        ]);
+
+        $class->update($request->all());
+
+        return redirect()->route('admin.classes.index')->with('success', 'Data kelas berhasil diperbarui.');
     }
 
     /**
@@ -64,6 +86,8 @@ class ClassController extends Controller
      */
     public function destroy(Classes $class)
     {
-        //
+        $class->delete();
+
+        return redirect()->route('admin.classes.index')->with('success', 'Kelas berhasil dihapus.');
     }
 }

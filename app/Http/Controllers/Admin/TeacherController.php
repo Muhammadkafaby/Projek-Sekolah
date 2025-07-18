@@ -24,7 +24,7 @@ class TeacherController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/Teacher/Create');
     }
 
     /**
@@ -32,7 +32,16 @@ class TeacherController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nip' => 'required|unique:teachers',
+            'name' => 'required',
+            'position' => 'required',
+            'subject' => 'required',
+        ]);
+
+        Teacher::create($request->all());
+
+        return redirect()->route('admin.teachers.index')->with('success', 'Guru berhasil ditambahkan.');
     }
 
     /**
@@ -48,7 +57,9 @@ class TeacherController extends Controller
      */
     public function edit(Teacher $teacher)
     {
-        //
+        return Inertia::render('Admin/Teacher/Edit', [
+            'teacher' => $teacher,
+        ]);
     }
 
     /**
@@ -56,7 +67,16 @@ class TeacherController extends Controller
      */
     public function update(Request $request, Teacher $teacher)
     {
-        //
+        $request->validate([
+            'nip' => 'required|unique:teachers,nip,' . $teacher->id,
+            'name' => 'required',
+            'position' => 'required',
+            'subject' => 'required',
+        ]);
+
+        $teacher->update($request->all());
+
+        return redirect()->route('admin.teachers.index')->with('success', 'Data guru berhasil diperbarui.');
     }
 
     /**
@@ -64,6 +84,8 @@ class TeacherController extends Controller
      */
     public function destroy(Teacher $teacher)
     {
-        //
+        $teacher->delete();
+
+        return redirect()->route('admin.teachers.index')->with('success', 'Guru berhasil dihapus.');
     }
 }

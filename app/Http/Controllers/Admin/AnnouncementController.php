@@ -24,7 +24,7 @@ class AnnouncementController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/Announcement/Create');
     }
 
     /**
@@ -32,7 +32,14 @@ class AnnouncementController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+
+        Announcement::create($request->all());
+
+        return redirect()->route('admin.announcements.index')->with('success', 'Pengumuman berhasil ditambahkan.');
     }
 
     /**
@@ -48,7 +55,9 @@ class AnnouncementController extends Controller
      */
     public function edit(Announcement $announcement)
     {
-        //
+        return Inertia::render('Admin/Announcement/Edit', [
+            'announcement' => $announcement,
+        ]);
     }
 
     /**
@@ -56,7 +65,14 @@ class AnnouncementController extends Controller
      */
     public function update(Request $request, Announcement $announcement)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+
+        $announcement->update($request->all());
+
+        return redirect()->route('admin.announcements.index')->with('success', 'Pengumuman berhasil diperbarui.');
     }
 
     /**
@@ -64,6 +80,8 @@ class AnnouncementController extends Controller
      */
     public function destroy(Announcement $announcement)
     {
-        //
+        $announcement->delete();
+
+        return redirect()->route('admin.announcements.index')->with('success', 'Pengumuman berhasil dihapus.');
     }
 }

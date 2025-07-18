@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
 {
@@ -24,7 +25,7 @@ class DocumentController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/Document/Create');
     }
 
     /**
@@ -32,7 +33,20 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'file' => 'required|file|mimes:pdf,doc,docx,jpg,png|max:2048',
+        ]);
+
+        $data = $request->all();
+
+        if ($request->hasFile('file')) {
+            $data['file'] = $request->file('file')->store('documents', 'public');
+        }
+
+        Document::create($data);
+
+        return redirect()->route('admin.documents.index')->with('success', 'Dokumen berhasil ditambahkan.');
     }
 
     /**
@@ -48,7 +62,9 @@ class DocumentController extends Controller
      */
     public function edit(Document $document)
     {
-        //
+        return Inertia::render('Admin/Document/Edit', [
+            'document' => $document,
+        ]);
     }
 
     /**
@@ -56,7 +72,23 @@ class DocumentController extends Controller
      */
     public function update(Request $request, Document $document)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,jpg,png|max:2048',
+        ]);
+
+        $data = $request->all();
+
+        if ($request->hasFile('file')) {
+            if ($document->file) {
+                Storage::disk('public')->delete($document->file);
+            }
+            $data['file'] = $request->file('file')->store('documents', 'public');
+        }
+
+        $document->update($data);
+
+        return redirect()->route('admin.documents.index')->with('success', 'Dokumen berhasil diperbarui.');
     }
 
     /**
@@ -64,6 +96,12 @@ class DocumentController extends Controller
      */
     public function destroy(Document $document)
     {
-        //
+        if ($document->file) {
+            Storage::disk('public')->delete($document->file);
+        }
+        
+        $document->delete();
+
+        return redirect()->route('admin.documents.index')->with('success', 'Dokumen berhasil dihapus.');
     }
 }

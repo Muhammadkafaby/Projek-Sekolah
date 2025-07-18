@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Billing;
+use App\Models\Student;
+use App\Models\PaymentType;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -24,7 +26,10 @@ class PaymentController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/Payment/Create', [
+            'students' => Student::all(),
+            'paymentTypes' => PaymentType::all(),
+        ]);
     }
 
     /**
@@ -32,7 +37,16 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'payment_type_id' => 'required|exists:payment_types,id',
+            'amount' => 'required|numeric',
+            'due_date' => 'required|date',
+        ]);
+
+        Billing::create($request->all());
+
+        return redirect()->route('admin.payments.index')->with('success', 'Tagihan berhasil ditambahkan.');
     }
 
     /**
@@ -48,7 +62,11 @@ class PaymentController extends Controller
      */
     public function edit(Billing $billing)
     {
-        //
+        return Inertia::render('Admin/Payment/Edit', [
+            'billing' => $billing,
+            'students' => Student::all(),
+            'paymentTypes' => PaymentType::all(),
+        ]);
     }
 
     /**
@@ -56,7 +74,17 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Billing $billing)
     {
-        //
+        $request->validate([
+            'student_id' => 'required|exists:students,id',
+            'payment_type_id' => 'required|exists:payment_types,id',
+            'amount' => 'required|numeric',
+            'due_date' => 'required|date',
+            'status' => 'required',
+        ]);
+
+        $billing->update($request->all());
+
+        return redirect()->route('admin.payments.index')->with('success', 'Tagihan berhasil diperbarui.');
     }
 
     /**
@@ -64,6 +92,8 @@ class PaymentController extends Controller
      */
     public function destroy(Billing $billing)
     {
-        //
+        $billing->delete();
+
+        return redirect()->route('admin.payments.index')->with('success', 'Tagihan berhasil dihapus.');
     }
 }

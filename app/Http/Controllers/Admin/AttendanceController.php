@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\Classes;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -24,7 +26,10 @@ class AttendanceController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Admin/Attendance/Create', [
+            'classes' => Classes::all(),
+            'students' => Student::all(),
+        ]);
     }
 
     /**
@@ -32,7 +37,16 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'date' => 'required|date',
+            'class_id' => 'required|exists:classes,id',
+            'student_id' => 'required|exists:students,id',
+            'status' => 'required',
+        ]);
+
+        Attendance::create($request->all());
+
+        return redirect()->route('admin.attendances.index')->with('success', 'Absensi berhasil diinput.');
     }
 
     /**
@@ -48,7 +62,11 @@ class AttendanceController extends Controller
      */
     public function edit(Attendance $attendance)
     {
-        //
+        return Inertia::render('Admin/Attendance/Edit', [
+            'attendance' => $attendance,
+            'classes' => Classes::all(),
+            'students' => Student::all(),
+        ]);
     }
 
     /**
@@ -56,7 +74,16 @@ class AttendanceController extends Controller
      */
     public function update(Request $request, Attendance $attendance)
     {
-        //
+        $request->validate([
+            'date' => 'required|date',
+            'class_id' => 'required|exists:classes,id',
+            'student_id' => 'required|exists:students,id',
+            'status' => 'required',
+        ]);
+
+        $attendance->update($request->all());
+
+        return redirect()->route('admin.attendances.index')->with('success', 'Absensi berhasil diperbarui.');
     }
 
     /**
@@ -64,6 +91,8 @@ class AttendanceController extends Controller
      */
     public function destroy(Attendance $attendance)
     {
-        //
+        $attendance->delete();
+
+        return redirect()->route('admin.attendances.index')->with('success', 'Absensi berhasil dihapus.');
     }
 }
